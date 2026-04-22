@@ -245,6 +245,22 @@
   border-left: 3px solid var(--border-subtle);
 }
 
+.roster-row-draft-num {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-condensed);
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
 .roster-row-pos {
   font-family: var(--font-condensed);
   font-size: 0.7rem;

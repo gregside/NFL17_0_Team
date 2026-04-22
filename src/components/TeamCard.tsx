@@ -17,6 +17,8 @@ function getSlotDisplay(picks: TeamPicks, key: SlotKey) {
   const pick = picks[key];
   if (!pick) return null;
 
+  const draftOrder = pick.draftOrder;
+
   if (key === 'DEF' && pick.defense) {
     return {
       name: `${pick.defense.shortDisplayName} DS/T`,
@@ -24,6 +26,7 @@ function getSlotDisplay(picks: TeamPicks, key: SlotKey) {
       teamColor: pick.defense.color,
       teamLogo: pick.defense.logo,
       isLogo: true,
+      draftOrder,
     };
   }
   if (key === 'HC' && pick.coach) {
@@ -34,6 +37,7 @@ function getSlotDisplay(picks: TeamPicks, key: SlotKey) {
       teamLogo: pick.coach.teamLogo,
       isLogo: false,
       initials: pick.coach.firstName[0] + pick.coach.lastName[0],
+      draftOrder,
     };
   }
   if (pick.player) {
@@ -45,6 +49,7 @@ function getSlotDisplay(picks: TeamPicks, key: SlotKey) {
       isLogo: false,
       jersey: pick.player.jersey,
       position: pick.player.position,
+      draftOrder,
     };
   }
   return null;
@@ -179,6 +184,7 @@ export default function TeamCard({ picks, isComplete }: TeamCardProps) {
                     className="roster-row-team-logo"
                     crossOrigin="anonymous"
                   />
+                  <div className="roster-row-draft-num">{display.draftOrder}</div>
                 </div>
               );
             })}

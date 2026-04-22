@@ -39,6 +39,7 @@ export interface SlotPick {
   player?: Player;
   coach?: Coach;
   defense?: Team;
+  draftOrder?: number;
 }
 
 export type TeamPicks = Record<SlotKey, SlotPick | null>;

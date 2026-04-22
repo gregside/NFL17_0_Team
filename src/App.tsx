@@ -80,7 +80,8 @@ export default function App() {
 
   const lockInPick = useCallback((slot: SlotKey, pick: { player?: Player; coach?: Coach; defense?: Team }) => {
     if (!currentTeam) return;
-    setPicks((prev) => ({ ...prev, [slot]: pick }));
+    const draftOrder = 6 - openSlots.length + 1;
+    setPicks((prev) => ({ ...prev, [slot]: { ...pick, draftOrder } }));
     setUsedTeamIds((prev) => [...prev, currentTeam.id]);
     setCurrentTeam(null);
     const remaining = openSlots.filter((s) => s !== slot);
