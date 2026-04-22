@@ -105,12 +105,30 @@ export default function TeamCard({ picks, isComplete }: TeamCardProps) {
         useCORS: true,
         allowTaint: true,
       });
-      const link = document.createElement('a');
-      link.download = 'my-17-0-team.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, 'image/png')
+      );
+      if (!blob) return;
+
+      const file = new File([blob], 'my-17-0-team.png', { type: 'image/png' });
+
+      // Use native share sheet on mobile (lets user save to photos)
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file] });
+      } else {
+        // Fallback: direct download for desktop
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = 'my-17-0-team.png';
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
     } catch (e) {
-      console.error('Download failed:', e);
+      // User cancelled share sheet — not an error
+      if (e instanceof Error && e.name === 'AbortError') return;
+      console.error('Share/download failed:', e);
     }
   };
 
@@ -213,11 +231,11 @@ export default function TeamCard({ picks, isComplete }: TeamCardProps) {
       {isComplete && (
         <button className="download-btn" onClick={handleDownload}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+            <polyline points="16 6 12 2 8 6" />
+            <line x1="12" y1="2" x2="12" y2="15" />
           </svg>
-          DOWNLOAD TEAM CARD
+          SHARE TEAM CARD
         </button>
       )}
     </div>
