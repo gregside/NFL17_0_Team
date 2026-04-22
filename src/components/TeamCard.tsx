@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import { TeamPicks, SLOT_KEYS, SlotKey } from '../types';
 import './TeamCard.css';
@@ -54,25 +54,33 @@ export default function TeamCard({ picks, isComplete }: TeamCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-
-  const handleScroll = useCallback(() => {
-    const sentinel = sentinelRef.current;
-    const wrapper = wrapperRef.current;
-    if (!sentinel || !wrapper) return;
-    const morphRange = 100;
-    const progress = Math.min(1, Math.max(0, -sentinel.getBoundingClientRect().top / morphRange));
-    wrapper.style.setProperty('--morph', String(progress));
-    // Expose wrapper height for stacking sticky elements below
-    const h = wrapper.getBoundingClientRect().height;
-    document.documentElement.style.setProperty('--roster-h', `${h}px`);
-  }, []);
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
-    if (isComplete) return;
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isComplete, handleScroll]);
+    if (isComplete) { setCollapsed(false); return; }
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setCollapsed(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isComplete]);
+
+  // Update --roster-h after collapse transition settles
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+    const update = () => {
+      const h = wrapper.getBoundingClientRect().height;
+      document.documentElement.style.setProperty('--roster-h', `${h}px`);
+    };
+    // Update immediately and after transition ends
+    update();
+    wrapper.addEventListener('transitionend', update);
+    return () => wrapper.removeEventListener('transitionend', update);
+  }, [collapsed]);
 
   const handleDownload = async () => {
     if (!cardRef.current) return;
@@ -97,7 +105,7 @@ export default function TeamCard({ picks, isComplete }: TeamCardProps) {
       {/* Sentinel sits outside sticky wrapper so it scrolls away */}
       {!isComplete && <div ref={sentinelRef} className="team-card-sentinel" />}
 
-      <div className={`team-card-wrapper ${!isComplete ? 'team-card-wrapper--sticky' : ''}`} ref={wrapperRef}>
+      <div className={`team-card-wrapper ${!isComplete ? 'team-card-wrapper--sticky' : ''} ${collapsed ? 'team-card-wrapper--collapsed' : ''}`} ref={wrapperRef}>
         <div className="team-card" ref={cardRef}>
           <div className="team-card-header">
             <div className="team-card-title">ROSTER</div>
