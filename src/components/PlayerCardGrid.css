@@ -6,7 +6,7 @@
 /* ===== Sticky Controls ===== */
 .card-grid-sticky-controls {
   position: sticky;
-  top: var(--roster-h, 60px);
+  top: calc(var(--roster-h, 60px) + env(safe-area-inset-top, 0px));
   z-index: 90;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);

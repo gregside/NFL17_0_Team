@@ -4,8 +4,13 @@
 
 .team-card-wrapper--sticky {
   position: sticky;
-  top: 0;
+  top: env(safe-area-inset-top, 0px);
   z-index: 100;
+  pointer-events: none;
+}
+
+.team-card-wrapper--sticky .team-card {
+  pointer-events: auto;
 }
 
 .team-card-sentinel {
