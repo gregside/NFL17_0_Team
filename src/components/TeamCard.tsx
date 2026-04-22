@@ -59,27 +59,41 @@ export default function TeamCard({ picks, isComplete }: TeamCardProps) {
   useEffect(() => {
     if (isComplete) { setCollapsed(false); return; }
     const el = sentinelRef.current;
-    if (!el) return;
+    const wrapper = wrapperRef.current;
+    if (!el || !wrapper) return;
     const observer = new IntersectionObserver(
-      ([entry]) => setCollapsed(!entry.isIntersecting),
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          // Lock the wrapper's flow height before collapsing
+          wrapper.style.height = `${wrapper.getBoundingClientRect().height}px`;
+          setCollapsed(true);
+        } else {
+          // Start expanding, then clear locked height after transition
+          setCollapsed(false);
+          setTimeout(() => { wrapper.style.height = ''; }, 350);
+        }
+      },
       { threshold: 0 }
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, [isComplete]);
 
-  // Update --roster-h after collapse transition settles
+  // Keep --roster-h in sync with visible card height throughout transitions
   useEffect(() => {
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
+    const card = cardRef.current;
+    if (!card) return;
+    let raf: number;
     const update = () => {
-      const h = wrapper.getBoundingClientRect().height;
+      const h = card.getBoundingClientRect().height;
       document.documentElement.style.setProperty('--roster-h', `${h}px`);
+      raf = requestAnimationFrame(update);
     };
-    // Update immediately and after transition ends
-    update();
-    wrapper.addEventListener('transitionend', update);
-    return () => wrapper.removeEventListener('transitionend', update);
+    raf = requestAnimationFrame(update);
+    // Stop polling after transition settles
+    const stop = () => cancelAnimationFrame(raf);
+    const timer = setTimeout(stop, 400);
+    return () => { cancelAnimationFrame(raf); clearTimeout(timer); };
   }, [collapsed]);
 
   const handleDownload = async () => {
