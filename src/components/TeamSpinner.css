@@ -1,0 +1,144 @@
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: 24px;
+  padding: 20px 0;
+}
+
+.spinner-display {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.spinner-display--active {
+  border-color: var(--accent-gold-dim);
+  box-shadow: 0 0 30px rgba(201, 169, 78, 0.1);
+}
+
+.spinner-display--landed {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 40px var(--glow-gold);
+  animation: landPulse 0.6s ease-out;
+  overflow: visible;
+}
+
+@keyframes landPulse {
+  0% { transform: scale(1.08); }
+  50% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+/* All logos stacked absolutely on top of each other */
+.spinner-logos-stack {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.spinner-logo-item {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  pointer-events: none;
+  /* No transition during fast spinning - instant swap looks cleaner than crossfade */
+  transition: none;
+}
+
+.spinner-logo-item--active {
+  opacity: 1;
+}
+
+.spinner-logo-item--landed {
+  width: 90px;
+  height: 90px;
+  inset: -5px;
+  transition: width 0.3s ease, height 0.3s ease, inset 0.3s ease;
+}
+
+.spinner-team-name {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  animation: fadeUp 0.4s ease-out;
+  margin-top: 8px;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.spinner-placeholder {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner-nfl-shield {
+  font-size: 3rem;
+  opacity: 0.3;
+}
+
+.spin-btn {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 14px 40px;
+  color: var(--bg-primary);
+  background: linear-gradient(135deg, var(--accent-gold), #d4b45a);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.spin-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+
+.spin-btn:hover::before {
+  transform: translateX(100%);
+}
+
+.spin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px var(--glow-gold);
+}
+
+.spin-btn:active {
+  transform: translateY(0);
+}
+
+.spin-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
