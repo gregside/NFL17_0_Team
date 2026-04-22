@@ -8,12 +8,10 @@ import {
   TeamPicks,
   GamePhase,
   SLOT_KEYS,
-  POSITION_MAP,
 } from './types';
 import TeamCard from './components/TeamCard';
 import TeamSpinner from './components/TeamSpinner';
-import PlayerSearch from './components/PlayerSearch';
-import QuickPicks from './components/QuickPicks';
+import PlayerCardGrid from './components/PlayerCardGrid';
 import ConfirmPick from './components/ConfirmPick';
 import './App.css';
 
@@ -128,17 +126,6 @@ export default function App() {
     setPhase('ready');
   }, []);
 
-  const currentPlayers = currentTeam
-    ? (playersByTeam.get(currentTeam.id) ?? []).filter((p) => {
-        const slot = POSITION_MAP[p.position];
-        return slot && openSlots.includes(slot);
-      })
-    : [];
-
-  const offensiveOpenSlots = openSlots.filter(
-    (s) => s !== 'DEF' && s !== 'HC'
-  );
-
   if (phase === 'loading') {
     return (
       <div className="app">
@@ -177,24 +164,15 @@ export default function App() {
       )}
 
       {phase === 'picking' && currentTeam && (
-        <div className="picking-area">
-          <QuickPicks
-            team={currentTeam}
-            coach={coachesByTeam.get(currentTeam.id)}
-            openSlots={openSlots}
-            onSelectDefense={handleDefenseSelect}
-            onSelectCoach={handleCoachSelect}
-          />
-          {offensiveOpenSlots.length > 0 && (
-            <PlayerSearch
-              players={currentPlayers}
-              openSlots={offensiveOpenSlots}
-              onSelect={handlePlayerSelect}
-              teamColor={currentTeam.color}
-              teamName={currentTeam.displayName}
-            />
-          )}
-        </div>
+        <PlayerCardGrid
+          players={playersByTeam.get(currentTeam.id) ?? []}
+          team={currentTeam}
+          coach={coachesByTeam.get(currentTeam.id)}
+          openSlots={openSlots}
+          onSelectPlayer={handlePlayerSelect}
+          onSelectDefense={handleDefenseSelect}
+          onSelectCoach={handleCoachSelect}
+        />
       )}
 
       {phase === 'confirming' && pendingSlot && currentTeam && (

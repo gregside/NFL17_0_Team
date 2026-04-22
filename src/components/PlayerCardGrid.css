@@ -1,0 +1,312 @@
+/* ===== Container ===== */
+.card-grid-container {
+  margin-top: 20px;
+}
+
+/* ===== Header ===== */
+.card-grid-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.card-grid-title {
+  font-family: var(--font-condensed);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.card-grid-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  max-width: 200px;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.card-grid-search-icon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.card-grid-search {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  min-width: 0;
+}
+
+.card-grid-search::placeholder {
+  color: var(--text-muted);
+}
+
+.card-grid-search-clear {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+/* ===== Position Filter Chips ===== */
+.card-grid-filters {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.card-grid-filter-chip {
+  font-family: var(--font-condensed);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 5px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.card-grid-filter-chip:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.card-grid-filter-chip.active {
+  background: var(--accent-gold);
+  border-color: var(--accent-gold);
+  color: var(--bg-primary);
+}
+
+/* ===== Grid Body ===== */
+.card-grid-body {
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.card-grid-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.card-grid-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.card-grid-body::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 3px;
+}
+
+.card-grid-empty {
+  padding: 40px 20px;
+  text-align: center;
+  font-family: var(--font-condensed);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+/* ===== Position Groups ===== */
+.card-grid-group {
+  margin-bottom: 16px;
+}
+
+.card-grid-group:last-child {
+  margin-bottom: 0;
+}
+
+.card-grid-group-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.card-grid-group-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.card-grid-group-text {
+  font-family: var(--font-condensed);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.card-grid-group-count {
+  font-family: var(--font-condensed);
+  font-size: 0.55rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+
+/* ===== Player Cards ===== */
+.card-grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 170px));
+  justify-content: center;
+  gap: 8px;
+}
+
+.player-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+  overflow: hidden;
+  position: relative;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.player-card:hover {
+  border-color: var(--text-muted);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.player-card:active {
+  transform: translateY(0);
+}
+
+/* ===== Card Image Area ===== */
+.player-card-img-area {
+  width: 100%;
+  height: 90px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.player-card-headshot {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.player-card-jersey {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  opacity: 0.6;
+}
+
+.player-card-team-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.player-card-initials {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* ===== Card Info ===== */
+.player-card-info {
+  padding: 8px 8px 10px;
+  width: 100%;
+}
+
+.player-card-name {
+  font-family: var(--font-condensed);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-card-meta {
+  font-family: var(--font-condensed);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ===== Slot Badge ===== */
+.player-card-slot-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-family: var(--font-condensed);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  color: white;
+  opacity: 0.85;
+}
+
+.player-card:hover .player-card-slot-badge {
+  opacity: 1;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .card-grid-cards {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+
+  .card-grid-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .card-grid-search-wrap {
+    max-width: none;
+  }
+
+  .card-grid-title {
+    text-align: center;
+  }
+}
