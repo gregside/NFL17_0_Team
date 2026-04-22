@@ -55,7 +55,7 @@ export default function TeamSpinner({
     // Build a deterministic sequence of teams to cycle through,
     // ending with the selected team
     const sequence: Team[] = [];
-    const totalTicks = 22;
+    const totalTicks = 18;
     for (let i = 0; i < totalTicks - 1; i++) {
       let candidate: Team;
       do {
@@ -66,7 +66,7 @@ export default function TeamSpinner({
     sequence.push(selectedTeam);
 
     let tick = 0;
-    let delay = 50;
+    const delay = 50;
 
     const doTick = () => {
       setActiveTeamId(sequence[tick].id);
@@ -81,12 +81,6 @@ export default function TeamSpinner({
         return;
       }
 
-      // Accelerate for first few ticks, then decelerate
-      if (tick < 6) {
-        delay = 50;
-      } else {
-        delay = 50 + (tick - 6) * 18;
-      }
       intervalRef.current = setTimeout(doTick, delay);
     };
 
@@ -119,12 +113,6 @@ export default function TeamSpinner({
         {!activeTeam && (
           <div className="spinner-placeholder">
             <div className="spinner-nfl-shield">🏈</div>
-          </div>
-        )}
-
-        {landed && activeTeam && (
-          <div className="spinner-team-name" style={{ color: `#${activeTeam.color}` }}>
-            {activeTeam.displayName.toUpperCase()}
           </div>
         )}
       </div>
