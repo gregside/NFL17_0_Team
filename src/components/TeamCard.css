@@ -1,12 +1,23 @@
 .team-card-wrapper {
+  --morph: 0;
   margin-top: 8px;
+}
+
+.team-card-wrapper--sticky {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.team-card-sentinel {
+  height: 0;
 }
 
 .team-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: calc(12px - 4px * var(--morph));
+  padding: calc(16px - 8px * var(--morph));
   position: relative;
   overflow: hidden;
 }
@@ -19,11 +30,15 @@
   right: 0;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+  opacity: calc(1 - var(--morph));
 }
 
 .team-card-header {
   text-align: center;
-  margin-bottom: 14px;
+  margin-bottom: calc(14px * (1 - var(--morph)));
+  max-height: calc(24px * (1 - var(--morph)));
+  opacity: calc(1 - var(--morph) * 2.5);
+  overflow: hidden;
 }
 
 .team-card-title {
@@ -44,21 +59,23 @@
 }
 
 .team-card-slots {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: calc(8px - 5px * var(--morph));
 }
 
 .slot {
   background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  padding: 8px;
-  min-height: 90px;
+  border-radius: calc(8px - 2px * var(--morph));
+  padding: calc(8px - 5px * var(--morph));
+  min-height: calc(90px - 52px * var(--morph));
+  flex: 0 0 calc(30% - 16% * var(--morph));
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, background 0.3s ease;
 }
 
 .slot--filled {
@@ -72,11 +89,11 @@
 
 .slot-position {
   font-family: var(--font-condensed);
-  font-size: 0.65rem;
+  font-size: calc(0.65rem - 0.1rem * var(--morph));
   font-weight: 700;
   letter-spacing: 0.2em;
   color: var(--text-muted);
-  margin-bottom: 4px;
+  margin-bottom: calc(4px - 2px * var(--morph));
 }
 
 .slot--filled .slot-position {
@@ -93,9 +110,9 @@
 }
 
 .slot-image-wrap {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+  width: calc(44px - 8px * var(--morph));
+  height: calc(44px - 8px * var(--morph));
+  border-radius: calc(50% - 44% * var(--morph));
   overflow: hidden;
   background: var(--bg-primary);
   display: flex;
@@ -138,6 +155,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-height: calc(16px * (1 - var(--morph)));
+  opacity: calc(1 - var(--morph) * 2);
 }
 
 .slot-empty-label {
@@ -145,7 +164,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: calc(1.2rem - 0.6rem * var(--morph));
   color: var(--text-muted);
 }
 

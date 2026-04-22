@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import html2canvas from 'html2canvas';
 import { TeamPicks, SLOT_KEYS, SlotKey } from '../types';
 import './TeamCard.css';
@@ -52,6 +52,27 @@ function getSlotDisplay(picks: TeamPicks, key: SlotKey) {
 
 export default function TeamCard({ picks, isComplete }: TeamCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = useCallback(() => {
+    const sentinel = sentinelRef.current;
+    const wrapper = wrapperRef.current;
+    if (!sentinel || !wrapper) return;
+    const morphRange = 100;
+    const progress = Math.min(1, Math.max(0, -sentinel.getBoundingClientRect().top / morphRange));
+    wrapper.style.setProperty('--morph', String(progress));
+    // Expose wrapper height for stacking sticky elements below
+    const h = wrapper.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--roster-h', `${h}px`);
+  }, []);
+
+  useEffect(() => {
+    if (isComplete) return;
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isComplete, handleScroll]);
 
   const handleDownload = async () => {
     if (!cardRef.current) return;
@@ -72,11 +93,15 @@ export default function TeamCard({ picks, isComplete }: TeamCardProps) {
   };
 
   return (
-    <div className="team-card-wrapper">
-      <div className="team-card" ref={cardRef}>
-        <div className="team-card-header">
-          <div className="team-card-title">ROSTER</div>
-        </div>
+    <>
+      {/* Sentinel sits outside sticky wrapper so it scrolls away */}
+      {!isComplete && <div ref={sentinelRef} className="team-card-sentinel" />}
+
+      <div className={`team-card-wrapper ${!isComplete ? 'team-card-wrapper--sticky' : ''}`} ref={wrapperRef}>
+        <div className="team-card" ref={cardRef}>
+          <div className="team-card-header">
+            <div className="team-card-title">ROSTER</div>
+          </div>
 
         {isComplete ? (
           <div className="team-card-list">
@@ -174,5 +199,6 @@ export default function TeamCard({ picks, isComplete }: TeamCardProps) {
         </button>
       )}
     </div>
+    </>
   );
 }
