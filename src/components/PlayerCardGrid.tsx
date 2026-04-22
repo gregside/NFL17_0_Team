@@ -34,6 +34,7 @@ export default function PlayerCardGrid({
 }: PlayerCardGridProps) {
   const [activeFilter, setActiveFilter] = useState<SlotKey | 'ALL'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   const groups: PositionGroup[] = [];
 
@@ -83,10 +84,23 @@ export default function PlayerCardGrid({
     })
     .filter((g) => g.items.length > 0);
 
+  const getCardKey = (item: CardItem) =>
+    item.type === 'player' ? item.player.id
+    : item.type === 'defense' ? `def-${item.team.id}`
+    : `hc-${item.coach.id}`;
+
   const handleCardClick = (item: CardItem) => {
-    if (item.type === 'player') onSelectPlayer(item.player, item.slot);
-    else if (item.type === 'defense') onSelectDefense();
-    else if (item.type === 'coach') onSelectCoach();
+    const key = getCardKey(item);
+    if (selectedKey === key) {
+      // Second click — confirm the pick
+      if (item.type === 'player') onSelectPlayer(item.player, item.slot);
+      else if (item.type === 'defense') onSelectDefense();
+      else if (item.type === 'coach') onSelectCoach();
+      setSelectedKey(null);
+    } else {
+      // First click — select/highlight
+      setSelectedKey(key);
+    }
   };
 
   return (
@@ -146,15 +160,13 @@ export default function PlayerCardGrid({
               </div>
               <div className="card-grid-cards">
                 {group.items.map((item) => {
-                  const key =
-                    item.type === 'player' ? item.player.id
-                    : item.type === 'defense' ? `def-${item.team.id}`
-                    : `hc-${item.coach.id}`;
+                  const key = getCardKey(item);
+                  const isSelected = selectedKey === key;
 
                   return (
                     <button
                       key={key}
-                      className="player-card"
+                      className={`player-card ${isSelected ? 'player-card--selected' : ''}`}
                       onClick={() => handleCardClick(item)}
                     >
                       <div className="player-card-img-area" style={{ backgroundColor: `#${team.color}15` }}>
@@ -189,6 +201,11 @@ export default function PlayerCardGrid({
                           : item.type === 'defense' ? 'DEF'
                           : 'HC'}
                       </div>
+                      {isSelected && (
+                        <div className="player-card-confirm">
+                          TAP TO CONFIRM
+                        </div>
+                      )}
                     </button>
                   );
                 })}

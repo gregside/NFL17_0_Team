@@ -291,6 +291,36 @@
   opacity: 1;
 }
 
+/* ===== Selected / Confirm State ===== */
+.player-card--selected {
+  border: 3px solid var(--accent-gold) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(201, 169, 78, 0.3), 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.player-card-confirm {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  padding: 6px 0;
+  background: var(--accent-gold);
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--bg-primary);
+  text-align: center;
+  z-index: 2;
+  animation: confirmFadeIn 0.15s ease-out;
+}
+
+@keyframes confirmFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 480px) {
   .card-grid-cards {

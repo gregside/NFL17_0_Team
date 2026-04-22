@@ -43,7 +43,7 @@ export interface SlotPick {
 
 export type TeamPicks = Record<SlotKey, SlotPick | null>;
 
-export type GamePhase = 'loading' | 'ready' | 'spinning' | 'picking' | 'confirming' | 'complete';
+export type GamePhase = 'loading' | 'ready' | 'spinning' | 'picking' | 'complete';
 
 export const SLOT_KEYS: SlotKey[] = ['QB', 'RB', 'WR', 'TE', 'DEF', 'HC'];
 
