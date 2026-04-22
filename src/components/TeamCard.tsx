@@ -75,8 +75,7 @@ export default function TeamCard({ picks, isComplete }: TeamCardProps) {
     <div className="team-card-wrapper">
       <div className="team-card" ref={cardRef}>
         <div className="team-card-header">
-          <div className="team-card-title">MY 17-0 TEAM</div>
-          <div className="team-card-subtitle">UNDEFEATED ROSTER</div>
+          <div className="team-card-title">ROSTER</div>
         </div>
 
         {isComplete ? (

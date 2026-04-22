@@ -28,8 +28,7 @@ The roster endpoint includes a `coach` array with the head coach's `id`, `firstN
 2. **ready** — All data loaded, "Spin" button shown
 3. **spinning** — Team spinner animates through 32 team logos
 4. **picking** — Visual card grid of eligible players/DEF/HC grouped by position
-5. **confirming** — Modal overlay to confirm or cancel the pick
-6. **complete** — All 6 slots filled, team card displayed with download button
+5. **complete** — All 6 slots filled, team card displayed with download button
 
 ## Key Design Decisions
 
