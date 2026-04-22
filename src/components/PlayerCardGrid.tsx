@@ -105,45 +105,47 @@ export default function PlayerCardGrid({
 
   return (
     <div className="card-grid-container">
-      <div className="card-grid-header">
-        <div className="card-grid-title">
-          SELECT FROM THE <span style={{ color: `#${team.color}` }}>{team.displayName.toUpperCase()}</span>
+      <div className="card-grid-sticky-controls">
+        <div className="card-grid-header">
+          <div className="card-grid-title">
+            SELECT FROM THE <span style={{ color: `#${team.color}` }}>{team.displayName.toUpperCase()}</span>
+          </div>
+          <div className="card-grid-search-wrap">
+            <svg className="card-grid-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              className="card-grid-search"
+              placeholder="Filter by name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button className="card-grid-search-clear" onClick={() => setSearchQuery('')}>×</button>
+            )}
+          </div>
         </div>
-        <div className="card-grid-search-wrap">
-          <svg className="card-grid-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            type="text"
-            className="card-grid-search"
-            placeholder="Filter by name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {searchQuery && (
-            <button className="card-grid-search-clear" onClick={() => setSearchQuery('')}>×</button>
-          )}
-        </div>
-      </div>
 
-      <div className="card-grid-filters">
-        <button
-          className={`card-grid-filter-chip ${activeFilter === 'ALL' ? 'active' : ''}`}
-          onClick={() => setActiveFilter('ALL')}
-        >
-          ALL
-        </button>
-        {groups.map((g) => (
+        <div className="card-grid-filters">
           <button
-            key={g.slot}
-            className={`card-grid-filter-chip ${activeFilter === g.slot ? 'active' : ''}`}
-            style={activeFilter === g.slot ? { backgroundColor: `#${team.color}`, borderColor: `#${team.color}` } : undefined}
-            onClick={() => setActiveFilter(g.slot)}
+            className={`card-grid-filter-chip ${activeFilter === 'ALL' ? 'active' : ''}`}
+            onClick={() => setActiveFilter('ALL')}
           >
-            {g.slot === 'DEF' ? 'DS/T' : g.slot}
+            ALL
           </button>
-        ))}
+          {groups.map((g) => (
+            <button
+              key={g.slot}
+              className={`card-grid-filter-chip ${activeFilter === g.slot ? 'active' : ''}`}
+              style={activeFilter === g.slot ? { backgroundColor: `#${team.color}`, borderColor: `#${team.color}` } : undefined}
+              onClick={() => setActiveFilter(g.slot)}
+            >
+              {g.slot === 'DEF' ? 'DS/T' : g.slot}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="card-grid-body">
