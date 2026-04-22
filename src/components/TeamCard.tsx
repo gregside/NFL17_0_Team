@@ -22,6 +22,7 @@ function getSlotDisplay(picks: TeamPicks, key: SlotKey) {
       name: `${pick.defense.shortDisplayName} DS/T`,
       image: pick.defense.logo,
       teamColor: pick.defense.color,
+      teamLogo: pick.defense.logo,
       isLogo: true,
     };
   }
@@ -30,6 +31,7 @@ function getSlotDisplay(picks: TeamPicks, key: SlotKey) {
       name: pick.coach.fullName,
       image: undefined,
       teamColor: pick.coach.teamColor,
+      teamLogo: pick.coach.teamLogo,
       isLogo: false,
       initials: pick.coach.firstName[0] + pick.coach.lastName[0],
     };
@@ -39,6 +41,7 @@ function getSlotDisplay(picks: TeamPicks, key: SlotKey) {
       name: pick.player.fullName,
       image: pick.player.headshot,
       teamColor: pick.player.teamColor,
+      teamLogo: pick.player.teamLogo,
       isLogo: false,
       jersey: pick.player.jersey,
       position: pick.player.position,
@@ -75,48 +78,91 @@ export default function TeamCard({ picks, isComplete }: TeamCardProps) {
           <div className="team-card-title">MY 17-0 TEAM</div>
           <div className="team-card-subtitle">UNDEFEATED ROSTER</div>
         </div>
-        <div className="team-card-slots">
-          {SLOT_KEYS.map((key) => {
-            const display = getSlotDisplay(picks, key);
-            return (
-              <div
-                key={key}
-                className={`slot ${display ? 'slot--filled' : 'slot--empty'}`}
-                style={
-                  display
-                    ? { borderColor: `#${display.teamColor}` }
-                    : undefined
-                }
-              >
-                <div className="slot-position">{getSlotLabel(key)}</div>
-                {display ? (
-                  <div className="slot-content">
-                    <div className="slot-image-wrap">
-                      {display.image ? (
-                        <img
-                          src={display.image}
-                          alt={display.name}
-                          className={`slot-image ${display.isLogo ? 'slot-image--logo' : ''}`}
-                          crossOrigin="anonymous"
-                        />
-                      ) : display.initials ? (
-                        <div
-                          className="slot-initials"
-                          style={{ backgroundColor: `#${display.teamColor}` }}
-                        >
-                          {display.initials}
-                        </div>
-                      ) : null}
-                    </div>
-                    <div className="slot-name">{display.name}</div>
+
+        {isComplete ? (
+          <div className="team-card-list">
+            {SLOT_KEYS.map((key) => {
+              const display = getSlotDisplay(picks, key);
+              if (!display) return null;
+              return (
+                <div
+                  key={key}
+                  className="roster-row"
+                  style={{ borderLeftColor: `#${display.teamColor}` }}
+                >
+                  <div className="roster-row-pos">{getSlotLabel(key)}</div>
+                  <div className="roster-row-img-wrap">
+                    {display.image ? (
+                      <img
+                        src={display.image}
+                        alt={display.name}
+                        className={`roster-row-img ${display.isLogo ? 'roster-row-img--logo' : ''}`}
+                        crossOrigin="anonymous"
+                      />
+                    ) : display.initials ? (
+                      <div
+                        className="roster-row-initials"
+                        style={{ backgroundColor: `#${display.teamColor}` }}
+                      >
+                        {display.initials}
+                      </div>
+                    ) : null}
                   </div>
-                ) : (
-                  <div className="slot-empty-label">—</div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                  <div className="roster-row-name">{display.name}</div>
+                  <img
+                    src={display.teamLogo}
+                    alt=""
+                    className="roster-row-team-logo"
+                    crossOrigin="anonymous"
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="team-card-slots">
+            {SLOT_KEYS.map((key) => {
+              const display = getSlotDisplay(picks, key);
+              return (
+                <div
+                  key={key}
+                  className={`slot ${display ? 'slot--filled' : 'slot--empty'}`}
+                  style={
+                    display
+                      ? { borderColor: `#${display.teamColor}` }
+                      : undefined
+                  }
+                >
+                  <div className="slot-position">{getSlotLabel(key)}</div>
+                  {display ? (
+                    <div className="slot-content">
+                      <div className="slot-image-wrap">
+                        {display.image ? (
+                          <img
+                            src={display.image}
+                            alt={display.name}
+                            className={`slot-image ${display.isLogo ? 'slot-image--logo' : ''}`}
+                            crossOrigin="anonymous"
+                          />
+                        ) : display.initials ? (
+                          <div
+                            className="slot-initials"
+                            style={{ backgroundColor: `#${display.teamColor}` }}
+                          >
+                            {display.initials}
+                          </div>
+                        ) : null}
+                      </div>
+                      <div className="slot-name">{display.name}</div>
+                    </div>
+                  ) : (
+                    <div className="slot-empty-label">—</div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
       {isComplete && (
         <button className="download-btn" onClick={handleDownload}>
