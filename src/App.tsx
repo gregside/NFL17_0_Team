@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useGameData } from './hooks/useGameData';
 import {
   Team,
@@ -8,11 +8,11 @@ import {
   TeamPicks,
   GamePhase,
   SLOT_KEYS,
+  POSITION_MAP,
 } from './types';
 import TeamCard from './components/TeamCard';
 import TeamSpinner from './components/TeamSpinner';
 import PlayerCardGrid from './components/PlayerCardGrid';
-import ConfirmPick from './components/ConfirmPick';
 import './App.css';
 
 const INITIAL_PICKS: TeamPicks = {
@@ -30,11 +30,7 @@ export default function App() {
   const [picks, setPicks] = useState<TeamPicks>({ ...INITIAL_PICKS });
   const [usedTeamIds, setUsedTeamIds] = useState<string[]>([]);
   const [currentTeam, setCurrentTeam] = useState<Team | null>(null);
-
-  const [pendingSlot, setPendingSlot] = useState<SlotKey | null>(null);
-  const [pendingPlayer, setPendingPlayer] = useState<Player | undefined>();
-  const [pendingCoach, setPendingCoach] = useState<Coach | undefined>();
-  const [pendingDefense, setPendingDefense] = useState<Team | undefined>();
+  const assetsReadyRef = useRef(false);
 
   const openSlots = SLOT_KEYS.filter((k) => picks[k] === null);
   const isComplete = openSlots.length === 0;
@@ -44,85 +40,76 @@ export default function App() {
     setPhase('ready');
   }
 
+  const handleSpinStart = useCallback((team: Team) => {
+    assetsReadyRef.current = false;
+    // Only preload headshots for players in positions the user still needs
+    const players = playersByTeam.get(team.id) ?? [];
+    const eligible = players.filter((p) => {
+      const slot = POSITION_MAP[p.position];
+      return slot && openSlots.includes(slot);
+    });
+    const headshotUrls = eligible
+      .map((p) => p.headshot)
+      .filter((url): url is string => !!url);
+
+    if (headshotUrls.length === 0) {
+      assetsReadyRef.current = true;
+      return;
+    }
+
+    let loaded = 0;
+    for (const url of headshotUrls) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = img.onerror = () => {
+        loaded++;
+        if (loaded >= headshotUrls.length) {
+          assetsReadyRef.current = true;
+        }
+      };
+      img.src = url;
+    }
+  }, [playersByTeam, openSlots]);
+
+  const checkAssetsReady = useCallback(() => assetsReadyRef.current, []);
+
   const handleTeamSelected = useCallback((team: Team) => {
     setCurrentTeam(team);
     setPhase('picking');
   }, []);
 
+  const lockInPick = useCallback((slot: SlotKey, pick: { player?: Player; coach?: Coach; defense?: Team }) => {
+    if (!currentTeam) return;
+    setPicks((prev) => ({ ...prev, [slot]: pick }));
+    setUsedTeamIds((prev) => [...prev, currentTeam.id]);
+    setCurrentTeam(null);
+    const remaining = openSlots.filter((s) => s !== slot);
+    setPhase(remaining.length === 0 ? 'complete' : 'ready');
+  }, [currentTeam, openSlots]);
+
   const handlePlayerSelect = useCallback(
     (player: Player, slot: SlotKey) => {
-      setPendingSlot(slot);
-      setPendingPlayer(player);
-      setPendingCoach(undefined);
-      setPendingDefense(undefined);
-      setPhase('confirming');
+      lockInPick(slot, { player });
     },
-    []
+    [lockInPick]
   );
 
   const handleDefenseSelect = useCallback(() => {
     if (!currentTeam) return;
-    setPendingSlot('DEF');
-    setPendingPlayer(undefined);
-    setPendingCoach(undefined);
-    setPendingDefense(currentTeam);
-    setPhase('confirming');
-  }, [currentTeam]);
+    lockInPick('DEF', { defense: currentTeam });
+  }, [currentTeam, lockInPick]);
 
   const handleCoachSelect = useCallback(() => {
     if (!currentTeam) return;
     const coach = coachesByTeam.get(currentTeam.id);
     if (!coach) return;
-    setPendingSlot('HC');
-    setPendingPlayer(undefined);
-    setPendingCoach(coach);
-    setPendingDefense(undefined);
-    setPhase('confirming');
-  }, [currentTeam, coachesByTeam]);
-
-  const handleConfirm = useCallback(() => {
-    if (!pendingSlot || !currentTeam) return;
-
-    setPicks((prev) => ({
-      ...prev,
-      [pendingSlot]: {
-        player: pendingPlayer,
-        coach: pendingCoach,
-        defense: pendingDefense,
-      },
-    }));
-    setUsedTeamIds((prev) => [...prev, currentTeam.id]);
-
-    setPendingSlot(null);
-    setPendingPlayer(undefined);
-    setPendingCoach(undefined);
-    setPendingDefense(undefined);
-    setCurrentTeam(null);
-
-    const remainingSlots = openSlots.filter((s) => s !== pendingSlot);
-    if (remainingSlots.length === 0) {
-      setPhase('complete');
-    } else {
-      setPhase('ready');
-    }
-  }, [pendingSlot, pendingPlayer, pendingCoach, pendingDefense, currentTeam, openSlots]);
-
-  const handleCancelConfirm = useCallback(() => {
-    setPendingSlot(null);
-    setPendingPlayer(undefined);
-    setPendingCoach(undefined);
-    setPendingDefense(undefined);
-    setPhase('picking');
-  }, []);
+    lockInPick('HC', { coach });
+  }, [currentTeam, coachesByTeam, lockInPick]);
 
   const handleStartOver = useCallback(() => {
     setPicks({ ...INITIAL_PICKS });
     setUsedTeamIds([]);
     setCurrentTeam(null);
-    setPendingSlot(null);
-    setPendingPlayer(undefined);
-    setPendingCoach(undefined);
-    setPendingDefense(undefined);
     setPhase('ready');
   }, []);
 
@@ -158,8 +145,11 @@ export default function App() {
         <TeamSpinner
           teams={teams}
           usedTeamIds={usedTeamIds}
+          onSpinStart={handleSpinStart}
           onTeamSelected={handleTeamSelected}
+          checkAssetsReady={checkAssetsReady}
           disabled={false}
+          autoSpin
         />
       )}
 
@@ -172,18 +162,6 @@ export default function App() {
           onSelectPlayer={handlePlayerSelect}
           onSelectDefense={handleDefenseSelect}
           onSelectCoach={handleCoachSelect}
-        />
-      )}
-
-      {phase === 'confirming' && pendingSlot && currentTeam && (
-        <ConfirmPick
-          slot={pendingSlot}
-          player={pendingPlayer}
-          coach={pendingCoach}
-          defense={pendingDefense}
-          teamColor={currentTeam.color}
-          onConfirm={handleConfirm}
-          onCancel={handleCancelConfirm}
         />
       )}
 

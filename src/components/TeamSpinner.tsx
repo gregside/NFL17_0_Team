@@ -5,15 +5,21 @@ import './TeamSpinner.css';
 interface TeamSpinnerProps {
   teams: Team[];
   usedTeamIds: string[];
+  onSpinStart: (team: Team) => void;
   onTeamSelected: (team: Team) => void;
+  checkAssetsReady: () => boolean;
   disabled: boolean;
+  autoSpin?: boolean;
 }
 
 export default function TeamSpinner({
   teams,
   usedTeamIds,
+  onSpinStart,
   onTeamSelected,
+  checkAssetsReady,
   disabled,
+  autoSpin = false,
 }: TeamSpinnerProps) {
   const [spinning, setSpinning] = useState(false);
   const [activeTeamId, setActiveTeamId] = useState<string | null>(null);
@@ -22,6 +28,9 @@ export default function TeamSpinner({
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadCountRef = useRef(0);
+  const selectedTeamRef = useRef<Team | null>(null);
+  const minTicksDoneRef = useRef(false);
+  const loadedLogoIds = useRef<Set<string>>(new Set());
 
   const availableTeams = teams.filter((t) => !usedTeamIds.includes(t.id));
   const activeTeam = teams.find((t) => t.id === activeTeamId) ?? null;
@@ -30,10 +39,18 @@ export default function TeamSpinner({
   useEffect(() => {
     if (teams.length === 0) return;
     loadCountRef.current = 0;
+    loadedLogoIds.current.clear();
     teams.forEach((team) => {
       const img = new Image();
       img.crossOrigin = 'anonymous';
-      img.onload = img.onerror = () => {
+      img.onload = () => {
+        loadedLogoIds.current.add(team.id);
+        loadCountRef.current++;
+        if (loadCountRef.current >= teams.length) {
+          setImagesLoaded(true);
+        }
+      };
+      img.onerror = () => {
         loadCountRef.current++;
         if (loadCountRef.current >= teams.length) {
           setImagesLoaded(true);
@@ -43,41 +60,49 @@ export default function TeamSpinner({
     });
   }, [teams]);
 
+  const land = useCallback((selectedTeam: Team) => {
+    setActiveTeamId(selectedTeam.id);
+    setSpinning(false);
+    setLanded(true);
+    timeoutRef.current = setTimeout(() => {
+      onTeamSelected(selectedTeam);
+    }, 800);
+  }, [onTeamSelected]);
+
   const spin = useCallback(() => {
     if (spinning || availableTeams.length === 0) return;
 
     setLanded(false);
     setSpinning(true);
+    minTicksDoneRef.current = false;
 
     const selectedTeam =
       availableTeams[Math.floor(Math.random() * availableTeams.length)];
+    selectedTeamRef.current = selectedTeam;
 
-    // Build a deterministic sequence of teams to cycle through,
-    // ending with the selected team
-    const sequence: Team[] = [];
-    const totalTicks = 18;
-    for (let i = 0; i < totalTicks - 1; i++) {
-      let candidate: Team;
-      do {
-        candidate = teams[Math.floor(Math.random() * teams.length)];
-      } while (sequence.length > 0 && candidate.id === sequence[sequence.length - 1].id);
-      sequence.push(candidate);
-    }
-    sequence.push(selectedTeam);
+    // Notify parent to start preloading assets
+    onSpinStart(selectedTeam);
 
-    let tick = 0;
+    const minTicks = 18;
     const delay = 50;
+    let tick = 0;
 
     const doTick = () => {
-      setActiveTeamId(sequence[tick].id);
+      // Pick a random team whose logo has loaded (avoid repeating the previous)
+      const loadedTeams = teams.filter((t) => loadedLogoIds.current.has(t.id) && t.id !== activeTeamId);
+      if (loadedTeams.length > 0) {
+        const candidate = loadedTeams[Math.floor(Math.random() * loadedTeams.length)];
+        setActiveTeamId(candidate.id);
+      }
       tick++;
 
-      if (tick >= sequence.length) {
-        setSpinning(false);
-        setLanded(true);
-        timeoutRef.current = setTimeout(() => {
-          onTeamSelected(selectedTeam);
-        }, 800);
+      if (tick >= minTicks) {
+        minTicksDoneRef.current = true;
+      }
+
+      // Land when min ticks done and assets are loaded
+      if (minTicksDoneRef.current && checkAssetsReady()) {
+        land(selectedTeam);
         return;
       }
 
@@ -85,7 +110,16 @@ export default function TeamSpinner({
     };
 
     intervalRef.current = setTimeout(doTick, delay);
-  }, [spinning, availableTeams, teams, onTeamSelected]);
+  }, [spinning, availableTeams, teams, onSpinStart, activeTeamId, land, checkAssetsReady]);
+
+  // Auto-spin when enabled and images are loaded
+  const autoSpinFired = useRef(false);
+  useEffect(() => {
+    if (autoSpin && imagesLoaded && !autoSpinFired.current && !spinning && !landed) {
+      autoSpinFired.current = true;
+      spin();
+    }
+  }, [autoSpin, imagesLoaded, spinning, landed, spin]);
 
   useEffect(() => {
     return () => {
@@ -103,7 +137,7 @@ export default function TeamSpinner({
             <img
               key={team.id}
               src={team.logo}
-              alt={team.displayName}
+              alt=""
               crossOrigin="anonymous"
               className={`spinner-logo-item ${team.id === activeTeamId ? 'spinner-logo-item--active' : ''} ${team.id === activeTeamId && landed ? 'spinner-logo-item--landed' : ''}`}
             />
