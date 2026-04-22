@@ -189,7 +189,7 @@ export default function App() {
 
       {phase === 'complete' && (
         <div className="complete-banner">
-          <div className="complete-text">🏆 YOUR 17-0 ROSTER IS SET 🏆</div>
+          <div className="complete-text">YOUR 17-0 ROSTER IS SET</div>
         </div>
       )}
 
