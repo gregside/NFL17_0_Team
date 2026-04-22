@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchTeams, fetchAllPlayers, fetchAllCoaches } from '../services/api';
+import { fetchTeams, fetchAllRosters } from '../services/api';
 import { Team, Player, Coach } from '../types';
 
 interface GameData {
@@ -28,17 +28,13 @@ export function useGameData(): GameData {
         setTeams(t);
 
         setLoadingProgress('Fetching rosters...');
-        const players = await fetchAllPlayers(t, (loaded, total) => {
+        const { playersByTeam: players, coachesByTeam: coaches } = await fetchAllRosters(t, (loaded, total) => {
           if (!cancelled) {
             setLoadingProgress(`Fetching rosters (${loaded}/${total})...`);
           }
         });
         if (cancelled) return;
         setPlayersByTeam(players);
-
-        setLoadingProgress('Fetching coaches...');
-        const coaches = await fetchAllCoaches(t);
-        if (cancelled) return;
         setCoachesByTeam(coaches);
 
         setIsLoading(false);

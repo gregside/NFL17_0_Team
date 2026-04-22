@@ -17,12 +17,10 @@
 |----------|-------------|
 | Teams list | `site.api.espn.com/apis/site/v2/sports/football/nfl/teams` |
 | Team roster | `site.api.espn.com/apis/site/v2/sports/football/nfl/teams/{id}/roster` |
-| Coaches | `sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/{year}/coaches?limit=50` |
-| Season/year | `site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard` |
 
-### Coach Data Quirk
+### Coach Data
 
-The coaches endpoint returns ALL coaching staff (HCs, coordinators, assistants). Head coaches are identified by having an `experience` field — coordinators/assistants do not. The code filters on `coach.experience !== undefined` and uses `map.has(teamId)` to prevent overwrites (e.g., Jeff Hafley DC was overwriting Matt LaFleur HC for the Packers).
+The roster endpoint includes a `coach` array with the head coach's `id`, `firstName`, `lastName`, and `experience`. Coaches are extracted alongside players during roster fetching — no separate coaches endpoint needed.
 
 ## Game Flow (Phases)
 
@@ -52,3 +50,8 @@ The coaches endpoint returns ALL coaching staff (HCs, coordinators, assistants).
 ## File Structure
 
 See `table-of-contents.md` for a full directory map.
+
+
+## Maintenance responsibilities
+
+When adding or removing items, always update: `table-of-contents.md`. Check to see if the `README.md` also needs to be updated. When adding or editing items from a third-party, update the `ATTRIBUTION.md` in their folder.
