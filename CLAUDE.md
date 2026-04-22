@@ -27,7 +27,7 @@ The roster endpoint includes a `coach` array with the head coach's `id`, `firstN
 1. **loading** — Fetches teams, rosters (batched 8 at a time), and coaches
 2. **ready** — All data loaded, "Spin" button shown
 3. **spinning** — Team spinner animates through 32 team logos
-4. **picking** — Player search + quick picks (DEF/HC) for the selected team
+4. **picking** — Visual card grid of eligible players/DEF/HC grouped by position
 5. **confirming** — Modal overlay to confirm or cancel the pick
 6. **complete** — All 6 slots filled, team card displayed with download button
 
@@ -35,7 +35,7 @@ The roster endpoint includes a `coach` array with the head coach's `id`, `firstN
 
 - **Team spinner preloads all 32 logos** via `new Image()` on mount, renders all stacked with `position: absolute`, toggles `opacity` via CSS class — avoids flicker from swapping `src` attributes
 - **Position mapping**: QB→QB, RB→RB, HB→RB, FB→RB, WR→WR, TE→TE (defined in `POSITION_MAP`)
-- **DEF and HC** use quick-pick cards (not the player search input)
+- **Player selection uses a card grid** grouped by eligible positions (only positions the user still needs). Each card shows headshot, name, position, jersey number. DEF and HC appear as cards in their own groups.
 - Each team can only be used once across all 6 picks
 
 ## Commands

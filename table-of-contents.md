@@ -38,7 +38,7 @@ External API integration and data fetching.
 
 | File | Exports |
 |------|---------|
-| `api.ts` | `fetchTeams()`, `fetchRoster()`, `fetchAllPlayers()`, `fetchAllCoaches()` — all ESPN API calls |
+| `api.ts` | `fetchTeams()`, `fetchRoster()`, `fetchAllRosters()` — all ESPN API calls |
 
 ## `src/hooks/`
 
@@ -55,8 +55,7 @@ UI components. Each component has a co-located `.css` file.
 | Component | File | Purpose |
 |-----------|------|---------|
 | TeamSpinner | `TeamSpinner.tsx` / `.css` | Animated team logo spinner — preloads all 32 logos, stacks them with absolute positioning, toggles opacity |
-| PlayerSearch | `PlayerSearch.tsx` / `.css` | Text input with filtered dropdown for picking players by position |
-| QuickPicks | `QuickPicks.tsx` / `.css` | One-click cards for DEF (team defense) and HC (head coach) selections |
+| PlayerCardGrid | `PlayerCardGrid.tsx` / `.css` | Visual card grid of eligible players grouped by position, with filter chips and search. Includes DEF and HC cards. |
 | ConfirmPick | `ConfirmPick.tsx` / `.css` | Modal overlay to confirm or cancel a pick |
 | TeamCard | `TeamCard.tsx` / `.css` | Final 3×2 grid of selected picks, uses html2canvas for PNG download |
 
