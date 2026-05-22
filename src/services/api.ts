@@ -89,7 +89,7 @@ export async function fetchAllRosters(
 ): Promise<{ playersByTeam: Map<string, Player[]>; coachesByTeam: Map<string, Coach> }> {
   const playersByTeam = new Map<string, Player[]>();
   const coachesByTeam = new Map<string, Coach>();
-  const batchSize = 16;
+  const batchSize = 32;
 
   for (let i = 0; i < teams.length; i += batchSize) {
     const batch = teams.slice(i, i + batchSize);
