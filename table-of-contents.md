@@ -7,6 +7,7 @@
 | `index.html` | HTML entry point — favicon, meta tags, Google Fonts, mount div |
 | `package.json` | Dependencies and scripts (`dev`, `build`, `lint`, `preview`) |
 | `CLAUDE.md` | Agent context file — project overview, APIs, design decisions |
+| `vercel.json` | Vercel deployment config — rewrites to proxy ESPN API (avoids CORS) |
 | `vite.config.ts` | Vite configuration |
 | `tsconfig.json` | TypeScript config for app source |
 | `tsconfig.node.json` | TypeScript config for Vite/Node tooling |

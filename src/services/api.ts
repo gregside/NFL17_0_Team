@@ -1,8 +1,6 @@
 import { Team, Player, Coach } from '../types';
 
-const ESPN_BASE = import.meta.env.DEV
-  ? '/api/espn'
-  : 'https://site.api.espn.com';
+const ESPN_BASE = '/api/espn';
 
 const TEAMS_URL = `${ESPN_BASE}/apis/site/v2/sports/football/nfl/teams`;
 const ROSTER_URL = (teamId: string) =>
