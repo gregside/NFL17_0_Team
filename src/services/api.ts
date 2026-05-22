@@ -1,8 +1,12 @@
 import { Team, Player, Coach } from '../types';
 
-const TEAMS_URL = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams';
+const ESPN_BASE = import.meta.env.DEV
+  ? '/api/espn'
+  : 'https://site.api.espn.com';
+
+const TEAMS_URL = `${ESPN_BASE}/apis/site/v2/sports/football/nfl/teams`;
 const ROSTER_URL = (teamId: string) =>
-  `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${teamId}/roster`;
+  `${ESPN_BASE}/apis/site/v2/sports/football/nfl/teams/${teamId}/roster`;
 
 export async function fetchTeams(): Promise<Team[]> {
   const res = await fetch(TEAMS_URL);
@@ -85,7 +89,7 @@ export async function fetchAllRosters(
 ): Promise<{ playersByTeam: Map<string, Player[]>; coachesByTeam: Map<string, Coach> }> {
   const playersByTeam = new Map<string, Player[]>();
   const coachesByTeam = new Map<string, Coach>();
-  const batchSize = 8;
+  const batchSize = 16;
 
   for (let i = 0; i < teams.length; i += batchSize) {
     const batch = teams.slice(i, i + batchSize);
